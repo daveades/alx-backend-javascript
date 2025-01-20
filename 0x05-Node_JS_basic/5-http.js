@@ -8,7 +8,7 @@ function countStudents(path) {
         const lines = data
           .split('\n')
           .filter((line) => line.trim() !== '');
-        
+
         const students = lines.slice(1);
         const csStudents = [];
         const sweStudents = [];
@@ -22,7 +22,7 @@ function countStudents(path) {
         const output = [
           `Number of students: ${students.length}`,
           `Number of students in CS: ${csStudents.length}. List: ${csStudents.join(', ')}`,
-          `Number of students in SWE: ${sweStudents.length}. List: ${sweStudents.join(', ')}`
+          `Number of students in SWE: ${sweStudents.length}. List: ${sweStudents.join(', ')}`,
         ].join('\n');
 
         resolve(output);
@@ -35,7 +35,7 @@ function countStudents(path) {
 
 const app = http.createServer(async (req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/plain' });
-  
+
   if (req.url === '/') {
     res.end('Hello Holberton School!');
   } else if (req.url === '/students') {
