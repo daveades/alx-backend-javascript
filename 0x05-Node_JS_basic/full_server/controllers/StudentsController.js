@@ -1,49 +1,41 @@
+import readDatabase from '../utils/utils';
+
 class StudentsController {
-    constructor() {
-        this.students = [];
-    }
+    static async getAllStudents(req, res) {
+        try {
+            const students = await readDatabase(process.argv[2]);
+            let output = 'This is the list of our students\n';
+            
+            // Sort fields alphabetically case insensitive
+            const sortedFields = Object.keys(students).sort((a, b) => 
+                a.toLowerCase().localeCompare(b.toLowerCase())
+            );
 
-    getAllStudents(req, res) {
-        res.json(this.students);
-    }
-
-    addStudent(req, res) {
-        const student = req.body;
-        this.students.push(student);
-        res.status(201).json(student);
-    }
-
-    getStudentById(req, res) {
-        const studentId = req.params.id;
-        const student = this.students.find(s => s.id === studentId);
-        if (student) {
-            res.json(student);
-        } else {
-            res.status(404).send('Student not found');
+            sortedFields.forEach((field) => {
+                output += `Number of students in ${field}: ${students[field].length}. List: ${students[field].join(', ')}\n`;
+            });
+            
+            return res.status(200).send(output.slice(0, -1));
+        } catch (error) {
+            return res.status(500).send('Cannot load the database');
         }
     }
 
-    updateStudent(req, res) {
-        const studentId = req.params.id;
-        const index = this.students.findIndex(s => s.id === studentId);
-        if (index !== -1) {
-            this.students[index] = { ...this.students[index], ...req.body };
-            res.json(this.students[index]);
-        } else {
-            res.status(404).send('Student not found');
+    static async getAllStudentsByMajor(req, res) {
+        const { major } = req.params;
+        
+        if (major !== 'CS' && major !== 'SWE') {
+            return res.status(500).send('Major parameter must be CS or SWE');
         }
-    }
 
-    deleteStudent(req, res) {
-        const studentId = req.params.id;
-        const index = this.students.findIndex(s => s.id === studentId);
-        if (index !== -1) {
-            this.students.splice(index, 1);
-            res.status(204).send();
-        } else {
-            res.status(404).send('Student not found');
+        try {
+            const students = await readDatabase(process.argv[2]);
+            const studentList = students[major] || [];
+            return res.status(200).send(`List: ${studentList.join(', ')}`);
+        } catch (error) {
+            return res.status(500).send('Cannot load the database');
         }
     }
 }
 
-export default new StudentsController();
+export default StudentsController;
