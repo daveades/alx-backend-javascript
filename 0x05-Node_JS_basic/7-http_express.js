@@ -32,7 +32,7 @@ function countStudents(path) {
 }
 
 app.get('/', (req, res) => {
-  res.send('Hello ALX!');
+  res.send('Hello Holberton School!');
 });
 
 app.get('/students', async (req, res) => {
