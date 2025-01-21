@@ -4,47 +4,44 @@ const fs = require('fs').promises;
 const app = express();
 const port = 1245;
 
-function countStudents(path) {
-  return new Promise((resolve, reject) => {
-    fs.readFile(path, 'utf8')
-      .then((data) => {
-        const lines = data.trim().split('\n');
-        const students = lines.slice(1).filter((line) => line);
-        let output = `Number of students: ${students.length}\n`;
+async function countStudents(path) {
+  try {
+    const data = await fs.readFile(path, 'utf8');
+    const lines = data.trim().split('\n');
+    const students = lines.slice(1).filter((line) => line);
+    let output = `Number of students: ${students.length}\n`;
 
-        const fields = {};
-        students.forEach((student) => {
-          const [firstname, , , field] = student.split(',');
-          if (!fields[field]) fields[field] = [];
-          fields[field].push(firstname);
-        });
+    const fields = {};
+    students.forEach((student) => {
+      const [firstname, , , field] = student.split(',');
+      if (!fields[field]) fields[field] = [];
+      fields[field].push(firstname);
+    });
 
-        for (const [field, names] of Object.entries(fields)) {
-          output += `Number of students in ${field}: ${names.length}. List: ${names.join(', ')}\n`;
-        }
+    Object.entries(fields).forEach(([field, names]) => {
+      output += `Number of students in ${field}: ${names.length}. List: ${names.join(', ')}\n`;
+    });
 
-        resolve(output.trim());
-      })
-      .catch(() => {
-        reject(new Error('Cannot load the database'));
-      });
-  });
+    return output.trim();
+  } catch (error) {
+    throw new Error('Cannot load the database');
+  }
 }
 
 app.get('/', (req, res) => {
-  res.send('Hello Holberton School!');
+  res.status(200).send('Hello Holberton School!');
 });
 
 app.get('/students', async (req, res) => {
   const message = 'This is the list of our students\n';
   try {
     const data = await countStudents(process.argv[2]);
-    res.send(`${message}${data}`);
+    res.status(200).send(`${message}${data}`);
   } catch (error) {
-    res.send(`${message}${error.message}`);
+    res.status(200).send(`${message}${error.message}`);
   }
 });
 
-app.listen(port);
+const server = app.listen(port);
 
 module.exports = app;
