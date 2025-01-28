@@ -1,19 +1,19 @@
-const { expect } = require('chai');
 const request = require('request');
+const { expect } = require('chai');
 
-describe('Index page', () => {
-  const endpoint = 'http://localhost:7865';
+describe('API integration test', () => {
+  const API_URL = 'http://localhost:7865';
 
   describe('GET /', () => {
-    it('Returns the right status', (done) => {
-      request(endpoint, function (error, response, body) {
+    it('should return correct status code', (done) => {
+      request.get(API_URL, (error, response) => {
         expect(response.statusCode).to.equal(200);
         done();
       });
     });
 
-    it('Returns the right content', (done) => {
-      request(endpoint, function (error, response, body) {
+    it('should return correct result', (done) => {
+      request.get(API_URL, (error, response, body) => {
         expect(body).to.equal('Welcome to the payment system');
         done();
       });
@@ -21,16 +21,16 @@ describe('Index page', () => {
   });
 
   describe('GET /cart/:id', () => {
-    it('Returns status 200 for numeric ID', (done) => {
-      request(`${endpoint}/cart/12`, function (error, response, body) {
+    it('should return 200 and correct message for valid :id', (done) => {
+      request.get(`${API_URL}/cart/12`, (error, response, body) => {
         expect(response.statusCode).to.equal(200);
         expect(body).to.equal('Payment methods for cart 12');
         done();
       });
     });
 
-    it('Returns status 404 for non-numeric ID', (done) => {
-      request(`${endpoint}/cart/abc`, function (error, response, body) {
+    it('should return 404 for invalid :id', (done) => {
+      request.get(`${API_URL}/cart/hello`, (error, response) => {
         expect(response.statusCode).to.equal(404);
         done();
       });
