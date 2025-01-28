@@ -7,10 +7,12 @@
         "test": "mocha"
     },
     "dependencies": {
-        "mocha": "^9.0.0",
-        "assert": "^2.0.0"
+        "assert": "^2.0.0",
+        "mocha": "^9.0.0"
     },
-    "devDependencies": {},
+    "devDependencies": {
+        "chai": "^5.1.2"
+    },
     "author": "",
     "license": "ISC"
 }
